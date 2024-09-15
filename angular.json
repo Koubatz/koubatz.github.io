@@ -43,7 +43,6 @@
           },
           "configurations": {
             "production": {
-              "baseHref": "koubatz.github.io",
               "budgets": [
                 {
                   "type": "initial",
@@ -65,6 +64,14 @@
             }
           },
           "defaultConfiguration": "production"
+        },
+        "deploy": {
+          "builder": "angular-cli-ghpages:deploy",
+          "options": {
+            "repo": "https://github.com/koubatz/koubatz.github.io.git",
+            "branch": "gh-pages",
+            "dir": "dist/koubatz.github.io/browser"
+          }
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
