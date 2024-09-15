@@ -43,6 +43,7 @@
           },
           "configurations": {
             "production": {
+              "baseHref": "koubatz.github.io",
               "budgets": [
                 {
                   "type": "initial",
