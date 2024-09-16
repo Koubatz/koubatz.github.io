@@ -1,0 +1,23 @@
+@import "../../../styles.scss";
+
+:host {
+  .container {
+    display: grid;
+    grid-template-columns: 1fr 5fr 1fr;
+    align-items: center;
+    padding: 0.5rem 2rem;
+    background-color: $whitepaper-gray-color;
+
+    .header-title-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icons-container {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+    }
+  }
+}

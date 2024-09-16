@@ -1,0 +1,19 @@
+@import "../../../styles.scss";
+
+:host {
+  .skills-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    .main-skills-title {
+      margin-bottom: 0.375rem;
+    }
+
+    .skill {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+  }
+}

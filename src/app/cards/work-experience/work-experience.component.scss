@@ -1,0 +1,33 @@
+@import "../../../styles.scss";
+
+:host {
+  .work-experiences-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    .work-experience-title {
+      margin-bottom: 0.375rem;
+    }
+
+    .experiences-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+
+      .experience {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid black;
+        border-radius: 0.25rem;
+        padding: 0.25rem 0.5rem;
+        cursor: pointer;
+
+        .experience-labels {
+
+        }
+      }
+    }
+  }
+}

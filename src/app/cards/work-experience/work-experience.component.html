@@ -1,0 +1,38 @@
+<div class="card work-experiences-container">
+  <p class="work-experience-title">{{ workExperienceTitle | titlecase }}</p>
+  <div class="experiences-container">
+    @for (item of experiences; track item) {
+      <div
+        class="experience"
+        role="button"
+        aria-hidden="true"
+        (keyup)="toggleDescription(item)"
+        (click)="toggleDescription(item)"
+      >
+        <div class="experience-labels">
+          <h2>{{ item.company | titlecase }}</h2>
+          <span class="minimalist">{{ item.date | titlecase }}</span>
+          <p *ngIf="item.showDescription">{{ item.description }}</p>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- <ng-template #view let-item="data">
+  <div class="modal-container">
+    <div class="title">
+      <h2>{{ item.company }}</h2>
+    </div>
+    <div class="content">
+      <p class="current">
+        This is the first method. First method is to use a ViewContainerRef
+        with a Template Ref. You create the view contained within the
+        TemplateRef, then create the modal component and inject the view.
+      </p>
+    </div>
+    <div class="footer">
+      <button (click)="close()">Close</button>
+    </div>
+  </div>
+</ng-template> -->

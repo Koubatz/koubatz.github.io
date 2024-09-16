@@ -1,0 +1,9 @@
+<div class="card skills-container">
+  <p class="main-skills-title">{{ mainSkillsTitle | titlecase }}</p>
+  @for (item of skills; track item) {
+    <div class="skill">
+      <img class="icon-2" [src]="mountSrcImg(item)" alt="">
+      <h2>{{ item | titlecase }}</h2>
+    </div>
+  }
+</div>

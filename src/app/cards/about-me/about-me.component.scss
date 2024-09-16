@@ -1,0 +1,13 @@
+@import "../../../styles.scss";
+
+:host {
+  .photo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 12rem;
+    height: 12rem;
+    border-radius: 50%;
+    background-color: $primary-color;
+  }
+}
