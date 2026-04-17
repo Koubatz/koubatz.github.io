@@ -1,23 +1,66 @@
-@import "../../../styles.scss";
+@import "../../../colors.scss";
 
 :host {
-  .container {
-    display: grid;
-    grid-template-columns: 1fr 5fr 1fr;
-    align-items: center;
-    padding: 0.5rem 2rem;
-    background-color: $whitepaper-gray-color;
+  display: block;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 
-    .header-title-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+  .site-header {
+    background-color: rgba($dark-bg, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid $dark-border;
+  }
+
+  .header-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+
+    .brand-icon {
+      opacity: 0.9;
+      filter: invert(1);
     }
 
-    .icons-container {
+    .brand-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: $text-secondary;
+      letter-spacing: 0.04em;
+      text-transform: lowercase;
+    }
+  }
+
+  .header-nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    a {
       display: flex;
-      gap: 1rem;
-      justify-content: flex-end;
+      align-items: center;
+      opacity: 0.55;
+      transition: opacity 0.2s ease;
+
+      &:hover {
+        opacity: 1;
+      }
+
+      img {
+        filter: invert(1);
+      }
     }
   }
 }

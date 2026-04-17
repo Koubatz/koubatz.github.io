@@ -1,10 +1,16 @@
-<div class="container">
-  <img class="icon-4" src="cube.svg" alt="">
-  <div class="header-title-container">
-    <h1>{{ headertitle | uppercase }}</h1>
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand">
+      <img class="icon-1-5 brand-icon" src="cube.svg" alt="">
+      <span class="brand-name">{{ headertitle }}</span>
+    </div>
+    <nav class="header-nav">
+      <a href="https://github.com/Koubatz" target="_blank" rel="noopener" aria-label="GitHub">
+        <img class="icon-1-5" src="github.svg" alt="GitHub">
+      </a>
+      <a href="https://linkedin.com/in/luizkoubatz" target="_blank" rel="noopener" aria-label="LinkedIn">
+        <img class="icon-1-5" src="linkedin.svg" alt="LinkedIn">
+      </a>
+    </nav>
   </div>
-  <div class="icons-container">
-    <img class="icon-2" src="github.svg" alt="">
-    <img class="icon-2" src="linkedin.svg" alt="">
-  </div>
-</div>
+</header>

@@ -1,0 +1,103 @@
+<div class="curriculum-page">
+
+  <!-- Hero / Profile -->
+  <section class="hero">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      <span class="badge-label">disponível para oportunidades</span>
+    </div>
+    <h1 class="hero-name">Luiz Koubatz</h1>
+    <p class="hero-role">Software Engineer · Frontend Developer · Angular</p>
+    <p class="hero-about">{{ about }}</p>
+    <div class="hero-tags">
+      <span class="tag">Angular</span>
+      <span class="tag">TypeScript</span>
+      <span class="tag">RxJS</span>
+      <span class="tag">NgRx</span>
+      <span class="tag">Jest</span>
+      <span class="tag">Cypress</span>
+    </div>
+  </section>
+
+  <div class="page-divider"></div>
+
+  <!-- Experience Timeline -->
+  <section class="curriculum-section">
+    <h2 class="section-label">
+      <span class="section-label-prefix">~/</span>experiência
+    </h2>
+
+    <div class="timeline">
+      @for (item of experiences; track item.company; let last = $last) {
+        <div class="timeline-item" [class.last]="last">
+          <div class="timeline-track">
+            <div class="timeline-dot"></div>
+            @if (!last) {
+              <div class="timeline-line"></div>
+            }
+          </div>
+          <div class="timeline-content">
+            <div class="card experience-card">
+              <div class="exp-header">
+                <div class="exp-title-group">
+                  <h3 class="exp-role">{{ item.role }}</h3>
+                  <p class="exp-company">{{ item.company }}</p>
+                </div>
+                <span class="exp-date">{{ item.date }}</span>
+              </div>
+              <p class="exp-description">{{ item.description }}</p>
+              <ul class="bullets">
+                @for (bullet of item.bullets; track bullet.title) {
+                  <li class="bullet">
+                    <span class="bullet-title">{{ bullet.title }}</span>
+                    <span class="bullet-sep">—</span>
+                    <span class="bullet-text">{{ bullet.text }}</span>
+                  </li>
+                }
+              </ul>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <div class="page-divider"></div>
+
+  <!-- Education -->
+  <section class="curriculum-section">
+    <h2 class="section-label">
+      <span class="section-label-prefix">~/</span>formação
+    </h2>
+
+    <div class="timeline">
+      @for (item of education; track item.degree) {
+        <div class="timeline-item last">
+          <div class="timeline-track">
+            <div class="timeline-dot"></div>
+          </div>
+          <div class="timeline-content">
+            <div class="card experience-card">
+              <div class="exp-header">
+                <div class="exp-title-group">
+                  <h3 class="exp-role">{{ item.degree }}</h3>
+                  <p class="exp-company">{{ item.institution }}</p>
+                </div>
+              </div>
+              <ul class="bullets">
+                @for (bullet of item.bullets; track bullet.title) {
+                  <li class="bullet">
+                    <span class="bullet-title">{{ bullet.title }}</span>
+                    <span class="bullet-sep">—</span>
+                    <span class="bullet-text">{{ bullet.text }}</span>
+                  </li>
+                }
+              </ul>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+</div>

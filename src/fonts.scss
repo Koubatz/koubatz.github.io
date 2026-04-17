@@ -1,147 +1,97 @@
-@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Montserrat:wght@400;700&family=Open+Sans:wght@400;700&family=Poppins:wght@400;700&family=Roboto:wght@400;700&display=swap');
 
-// Variables for font families
-$font-primary: 'Roboto', sans-serif;
-$font-secondary: 'Open Sans', sans-serif;
-$font-heading: 'Montserrat', sans-serif;
-$font-body: 'Lato', sans-serif;
-$font-minimalist: 'Poppins', sans-serif;
-$font-classic: 'Helvetica', sans-serif;
+$font-sans:  'Inter', system-ui, -apple-system, sans-serif;
+$font-mono:  'JetBrains Mono', 'Fira Code', monospace;
 
-// General font sizes
-$font-size-small: 0.875rem;
-$font-size-medium: 1rem;
-$font-size-large: 1.5rem;
-$font-size-xlarge: 3rem;
+// Legacy aliases
+$font-primary:    $font-sans;
+$font-secondary:  $font-sans;
+$font-heading:    $font-sans;
+$font-body:       $font-sans;
+$font-minimalist: $font-sans;
+$font-classic:    $font-sans;
 
-// Font weights
+$font-size-small:  0.8125rem;
+$font-size-medium: 0.9375rem;
+$font-size-large:  1.25rem;
+$font-size-xlarge: 2.5rem;
+
 $font-weight-normal: 400;
-$font-weight-bold: 700;
+$font-weight-medium: 500;
+$font-weight-semi:   600;
+$font-weight-bold:   700;
 
-// Base body styling
 body {
-  font-family: $font-body;
+  font-family: $font-sans;
   font-size: $font-size-medium;
   line-height: 1.6;
-  color: #333;
+  color: $text-primary;
+  background-color: $dark-bg;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-// Headers
 h1, h2, h3, h4, h5, h6 {
-  font-family: $font-heading;
-  font-weight: $font-weight-bold;
-  color: $primary-color;
+  font-family: $font-sans;
+  font-weight: $font-weight-semi;
+  color: $text-primary;
   line-height: 1.2;
 }
 
-h1 {
-  font-size: $font-size-xlarge;
-}
+h1 { font-size: 2.25rem; }
+h2 { font-size: 1.375rem; }
+h3 { font-size: 1.0625rem; }
+h4, h5, h6 { font-size: $font-size-small; }
 
-h2 {
-  font-size: $font-size-large;
-}
-
-h3 {
-  font-size: $font-size-medium;
-}
-
-h4, h5, h6 {
-  font-size: $font-size-small;
-}
-
-// Paragraphs
 p {
-  font-family: $font-body;
+  font-family: $font-sans;
   font-size: $font-size-medium;
-  margin-bottom: 1.5rem;
+  color: $text-secondary;
+  margin-bottom: 0;
 }
 
-// Links
 a {
-  font-family: $font-minimalist;
-  font-weight: $font-weight-bold;
+  font-family: $font-sans;
+  font-weight: $font-weight-medium;
   text-decoration: none;
-  color: #0288d1;
+  color: $accent;
 
   &:hover {
-    text-decoration: underline;
+    color: lighten($accent, 10%);
   }
 }
 
-// Buttons
 button {
-  font-family: $font-primary;
+  font-family: $font-sans;
   font-size: $font-size-medium;
-  font-weight: $font-weight-bold;
-  padding: 0.75rem 1.5rem;
-  background-color: #0288d1;
-  color: white;
+  font-weight: $font-weight-medium;
+  padding: 0.625rem 1.25rem;
+  background-color: $text-primary;
+  color: $dark-bg;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
 
   &:hover {
-    background-color: #026a9e;
+    opacity: 0.88;
   }
 }
 
-// Sidebar and minimalistic elements
-.sidebar, .footer {
-  font-family: $font-classic;
-  font-size: $font-size-small;
-}
-
-// Additional styling for minimalistic elements
 .minimalist {
-  font-family: $font-minimalist;
-  font-weight: $font-weight-normal;
-  font-size: $font-size-small;
-  color: #777;
+  font-family: $font-mono;
+  font-size: 0.75rem;
+  color: $text-muted;
+  letter-spacing: 0.02em;
 }
 
 .icon {
-  &-1 {
-    width: 1rem;
-    height: 1rem;
-  }
-
-  &-1-5 {
-    width: 1.5rem;
-    height: 1.5rem;
-  }
-
-  &-2 {
-    width: 2rem;
-    height: 2rem;
-  }
-
-  &-3 {
-    width: 3rem;
-    height: 3rem;
-  }
-
-  &-4 {
-    width: 4rem;
-    height: 4rem;
-  }
-
-  &-5 {
-    width: 5rem;
-    height: 5rem;
-  }
-
-  &-6 {
-    width: 6rem;
-    height: 6rem;
-  }
-
-  &-7 {
-    width: 7rem;
-    height: 7rem;
-  }
-
-  &-8 {
-    width: 8rem;
-    height: 8rem;
-  }
+  &-1   { width: 1rem;   height: 1rem;   }
+  &-1-5 { width: 1.5rem; height: 1.5rem; }
+  &-2   { width: 2rem;   height: 2rem;   }
+  &-3   { width: 3rem;   height: 3rem;   }
+  &-4   { width: 4rem;   height: 4rem;   }
+  &-5   { width: 5rem;   height: 5rem;   }
+  &-6   { width: 6rem;   height: 6rem;   }
+  &-7   { width: 7rem;   height: 7rem;   }
+  &-8   { width: 8rem;   height: 8rem;   }
 }

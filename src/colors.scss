@@ -1,3 +1,19 @@
-$whitepaper-color: #fffdfa;
-$whitepaper-gray-color: #e8e6e1;
-$primary-color: #06162a;
+// Dark theme — inspired by Claude Code
+$dark-bg:             #0a0a0a;
+$dark-surface:        #111111;
+$dark-surface-raised: #161616;
+$dark-border:         #2a2a2a;
+$dark-border-subtle:  #1e1e1e;
+
+$text-primary:   #f0ede8;
+$text-secondary: #999999;
+$text-muted:     #555555;
+
+$accent:        #d4836a;   // Claude warm orange
+$accent-dim:    rgba(212, 131, 106, 0.12);
+$accent-border: rgba(212, 131, 106, 0.3);
+
+// Legacy aliases kept for compatibility
+$whitepaper-color:      $dark-surface;
+$whitepaper-gray-color: $dark-bg;
+$primary-color:         $text-primary;

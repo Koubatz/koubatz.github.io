@@ -1,20 +1,8 @@
-@import "../styles.scss";
+@import "../colors.scss";
 
 :host {
-  .app-container {
-    background-color: $whitepaper-gray-color;
-  }
-
-  .container-number-1 {
-    padding: 1rem 2rem;
-    display: grid;
-    grid-template-columns: 8fr auto 2fr;
-    gap: 2rem;
-  }
-
-  .container {
-    padding: 1rem 2rem;
-    display: grid;
-    grid-template-columns: 2fr 5fr;
-  }
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: $dark-bg;
 }
