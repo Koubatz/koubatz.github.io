@@ -70,7 +70,8 @@
           "options": {
             "repo": "git@github.com:Koubatz/koubatz.github.io.git",
             "branch": "gh-pages",
-            "dir": "dist/koubatz.github.io/browser"
+            "dir": "dist/koubatz.github.io/browser",
+            "cname": "koubatz.com.br"
           }
         },
         "serve": {
