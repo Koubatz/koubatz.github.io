@@ -43,6 +43,13 @@
       font-size: 0.8125rem;
       color: $text-muted;
     }
+
+    .player-bpm {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: $text-muted;
+      letter-spacing: 0.03em;
+    }
   }
 
   .player-controls {

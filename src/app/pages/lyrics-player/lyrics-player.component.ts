@@ -2,12 +2,14 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, ElementRef, Inject, OnDestroy, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LyricsApiService } from '../lyrics/lyrics-api.service';
+import { MAX_VALID_BPM, MIN_VALID_BPM } from '../lyrics/bpm-range';
 import { Song } from '../lyrics/song.model';
 
 const MIN_SPEED = 1;
 const MAX_SPEED = 10;
 const PIXELS_PER_SECOND_PER_SPEED = 12;
 const MAX_FRAME_DELTA_MS = 100;
+const PIXELS_PER_BEAT = 6;
 
 @Component({
   selector: 'app-lyrics-player',
@@ -101,6 +103,30 @@ export class LyricsPlayerComponent implements OnInit, OnDestroy {
     this.router.navigate(['/letras']);
   }
 
+  /** True when the current song has a usable BPM and playback is tempo-locked to it. */
+  get isBpmLocked(): boolean {
+    return this.isValidBpm(this.song?.bpm);
+  }
+
+  private isValidBpm(bpm: number | undefined): bpm is number {
+    return typeof bpm === 'number' && Number.isFinite(bpm) && bpm > 0;
+  }
+
+  /**
+   * Target scroll rate in pixels/second. When the song has a BPM, playback is
+   * tempo-locked to it and the manual 1-10 speed knob no longer applies —
+   * this already returns the final rate, not a "per speed unit" figure.
+   * Otherwise it falls back to the manual speed knob (1-10) scaled linearly.
+   */
+  private getPixelsPerSecond(): number {
+    const bpm = this.song?.bpm;
+    if (this.isValidBpm(bpm)) {
+      const clampedBpm = Math.min(Math.max(bpm, MIN_VALID_BPM), MAX_VALID_BPM);
+      return (clampedBpm / 60) * PIXELS_PER_BEAT;
+    }
+    return this.speed * PIXELS_PER_SECOND_PER_SPEED;
+  }
+
   private readonly step = (timestamp: number): void => {
     const container = this.scrollContainerRef?.nativeElement;
     if (!container) {
@@ -110,7 +136,7 @@ export class LyricsPlayerComponent implements OnInit, OnDestroy {
 
     if (this.lastTimestamp !== null) {
       const deltaMs = Math.min(timestamp - this.lastTimestamp, MAX_FRAME_DELTA_MS);
-      const pixelsPerSecond = this.speed * PIXELS_PER_SECOND_PER_SPEED;
+      const pixelsPerSecond = this.getPixelsPerSecond();
       this.scrollPosition += (pixelsPerSecond * deltaMs) / 1000;
       container.scrollTop = this.scrollPosition;
 

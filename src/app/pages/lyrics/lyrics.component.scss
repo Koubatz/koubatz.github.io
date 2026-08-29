@@ -128,6 +128,26 @@
     .field {
       flex: 1;
     }
+
+    .field-bpm {
+      flex: 0 0 140px;
+
+      // The default light/dark spinner arrows don't match the dark theme —
+      // invert them so they read as light against the dark field background.
+      &::-webkit-inner-spin-button,
+      &::-webkit-outer-spin-button {
+        background: transparent;
+        opacity: 0.5;
+        filter: invert(1);
+        cursor: pointer;
+        transition: opacity 0.2s ease;
+      }
+
+      &:hover::-webkit-inner-spin-button,
+      &:focus::-webkit-inner-spin-button {
+        opacity: 0.9;
+      }
+    }
   }
 
   .field {
@@ -235,6 +255,13 @@
       font-size: 0.8125rem;
       color: $text-muted;
     }
+
+    .song-bpm {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: $text-muted;
+      letter-spacing: 0.03em;
+    }
   }
 
   .song-actions {
@@ -303,6 +330,10 @@
 
     .form-row {
       flex-direction: column;
+
+      .field-bpm {
+        flex: 1;
+      }
     }
 
     .search-field {

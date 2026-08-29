@@ -7,13 +7,24 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const DATA_FILE = join(__dirname, '..', 'public', 'data', 'lyrics.json');
 const PORT = process.env['LYRICS_SERVER_PORT'] || 4300;
 
+// Keep these in sync with src/app/pages/lyrics/bpm-range.ts — this script runs
+// as a plain Node process outside the Angular build and can't import that
+// TypeScript module directly.
+const MIN_VALID_BPM = 30;
+const MAX_VALID_BPM = 300;
+
 function isValidSong(song) {
   return (
     song &&
     typeof song.id === 'string' &&
     typeof song.title === 'string' &&
     typeof song.artist === 'string' &&
-    typeof song.lyrics === 'string'
+    typeof song.lyrics === 'string' &&
+    (song.bpm === undefined ||
+      (typeof song.bpm === 'number' &&
+        Number.isFinite(song.bpm) &&
+        song.bpm >= MIN_VALID_BPM &&
+        song.bpm <= MAX_VALID_BPM))
   );
 }
 

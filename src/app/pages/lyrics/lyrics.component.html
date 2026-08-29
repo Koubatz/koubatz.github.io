@@ -37,6 +37,15 @@
           placeholder="Artista"
           [(ngModel)]="newArtist"
         />
+        <input
+          class="field field-bpm"
+          type="number"
+          name="bpm"
+          placeholder="BPM"
+          min="30"
+          max="300"
+          [(ngModel)]="newBpm"
+        />
       </div>
       <textarea
         class="field textarea"
@@ -85,6 +94,7 @@
           <div class="song-title-group">
             <span class="song-title">{{ song.title }}</span>
             <span class="song-artist" *ngIf="song.artist">{{ song.artist }}</span>
+            <span class="song-bpm" *ngIf="song.bpm">{{ song.bpm }} BPM</span>
           </div>
           <div class="song-actions">
             <button class="btn-icon" type="button" (click)="toggleExpanded(song)">

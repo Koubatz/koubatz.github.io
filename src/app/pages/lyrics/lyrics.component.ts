@@ -2,6 +2,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { MAX_VALID_BPM, MIN_VALID_BPM } from './bpm-range';
 import { LyricsApiService } from './lyrics-api.service';
 import { Song } from './song.model';
 
@@ -22,6 +23,7 @@ export class LyricsComponent implements OnInit {
   newTitle = '';
   newArtist = '';
   newLyrics = '';
+  newBpm: number | null = null;
 
   private readonly isBrowser: boolean;
 
@@ -63,11 +65,17 @@ export class LyricsComponent implements OnInit {
       return;
     }
 
+    const hasValidBpm =
+      typeof this.newBpm === 'number' &&
+      Number.isFinite(this.newBpm) &&
+      this.newBpm >= MIN_VALID_BPM &&
+      this.newBpm <= MAX_VALID_BPM;
     const song: Song = {
       id: this.generateId(),
       title,
       artist: this.newArtist.trim(),
       lyrics,
+      ...(hasValidBpm ? { bpm: this.newBpm as number } : {}),
     };
 
     this.songs = [song, ...this.songs];
@@ -76,6 +84,7 @@ export class LyricsComponent implements OnInit {
     this.newTitle = '';
     this.newArtist = '';
     this.newLyrics = '';
+    this.newBpm = null;
   }
 
   removeSong(song: Song): void {

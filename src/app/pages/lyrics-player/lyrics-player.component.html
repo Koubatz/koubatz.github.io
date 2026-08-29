@@ -4,17 +4,23 @@
     <div class="player-title-group">
       <span class="player-title">{{ song.title }}</span>
       <span class="player-artist" *ngIf="song.artist">{{ song.artist }}</span>
+      <span class="player-bpm" *ngIf="song.bpm">{{ song.bpm }} BPM</span>
     </div>
   </header>
 
   <div class="player-controls">
-    <button class="btn-icon" type="button" (click)="decreaseSpeed()" [disabled]="speed <= minSpeed">
-      − lento
-    </button>
-    <span class="speed-label">velocidade {{ speed }}</span>
-    <button class="btn-icon" type="button" (click)="increaseSpeed()" [disabled]="speed >= maxSpeed">
-      + rápido
-    </button>
+    <ng-container *ngIf="!isBpmLocked; else bpmLockedTpl">
+      <button class="btn-icon" type="button" (click)="decreaseSpeed()" [disabled]="speed <= minSpeed">
+        − lento
+      </button>
+      <span class="speed-label">velocidade {{ speed }}</span>
+      <button class="btn-icon" type="button" (click)="increaseSpeed()" [disabled]="speed >= maxSpeed">
+        + rápido
+      </button>
+    </ng-container>
+    <ng-template #bpmLockedTpl>
+      <span class="speed-label">ritmo automático ({{ song.bpm }} BPM)</span>
+    </ng-template>
     <button class="btn-primary" type="button" (click)="togglePlay()">
       {{ isPlaying ? 'pausar' : 'iniciar rolagem' }}
     </button>
