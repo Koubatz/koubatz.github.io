@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --open",
+    "lyrics-server": "node scripts/lyrics-server.mjs",
     "build": "ng build --base-href /koubatz.github.io/",
     "deploy": "ng deploy",
     "watch": "ng build --watch --configuration development",

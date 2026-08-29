@@ -1,0 +1,34 @@
+<main class="player-page" *ngIf="song; else notFoundTpl">
+  <header class="player-header">
+    <button class="btn-icon" type="button" (click)="goBack()">← voltar</button>
+    <div class="player-title-group">
+      <span class="player-title">{{ song.title }}</span>
+      <span class="player-artist" *ngIf="song.artist">{{ song.artist }}</span>
+    </div>
+  </header>
+
+  <div class="player-controls">
+    <button class="btn-icon" type="button" (click)="decreaseSpeed()" [disabled]="speed <= minSpeed">
+      − lento
+    </button>
+    <span class="speed-label">velocidade {{ speed }}</span>
+    <button class="btn-icon" type="button" (click)="increaseSpeed()" [disabled]="speed >= maxSpeed">
+      + rápido
+    </button>
+    <button class="btn-primary" type="button" (click)="togglePlay()">
+      {{ isPlaying ? 'pausar' : 'iniciar rolagem' }}
+    </button>
+    <button class="btn-icon" type="button" (click)="restart()">reiniciar</button>
+  </div>
+
+  <div class="lyrics-scroll scrollbar-accent" #scrollContainer>
+    <pre class="lyrics-text">{{ song.lyrics }}</pre>
+  </div>
+</main>
+
+<ng-template #notFoundTpl>
+  <main class="player-page player-page--empty" *ngIf="checkedStorage">
+    <p class="empty-state">Letra não encontrada.</p>
+    <button class="btn-icon" type="button" (click)="goBack()">← voltar para letras</button>
+  </main>
+</ng-template>

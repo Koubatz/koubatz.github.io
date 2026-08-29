@@ -1,0 +1,110 @@
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { LyricsApiService } from './lyrics-api.service';
+import { Song } from './song.model';
+
+@Component({
+  selector: 'app-lyrics',
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterLink],
+  templateUrl: './lyrics.component.html',
+  styleUrl: './lyrics.component.scss',
+})
+export class LyricsComponent implements OnInit {
+  songs: Song[] = [];
+  search = '';
+  expandedId: string | null = null;
+  loading = true;
+  saveError = false;
+
+  newTitle = '';
+  newArtist = '';
+  newLyrics = '';
+
+  private readonly isBrowser: boolean;
+
+  constructor(
+    private readonly lyricsApi: LyricsApiService,
+    @Inject(PLATFORM_ID) platformId: object
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
+
+  ngOnInit(): void {
+    if (!this.isBrowser) {
+      this.loading = false;
+      return;
+    }
+
+    this.lyricsApi.getSongs().subscribe((songs) => {
+      this.songs = songs;
+      this.loading = false;
+    });
+  }
+
+  get filteredSongs(): Song[] {
+    const term = this.search.trim().toLowerCase();
+    if (!term) {
+      return this.songs;
+    }
+    return this.songs.filter(
+      (song) =>
+        song.title.toLowerCase().includes(term) ||
+        song.artist.toLowerCase().includes(term)
+    );
+  }
+
+  addSong(): void {
+    const title = this.newTitle.trim();
+    const lyrics = this.newLyrics.trim();
+    if (!title || !lyrics) {
+      return;
+    }
+
+    const song: Song = {
+      id: this.generateId(),
+      title,
+      artist: this.newArtist.trim(),
+      lyrics,
+    };
+
+    this.songs = [song, ...this.songs];
+    this.persist();
+
+    this.newTitle = '';
+    this.newArtist = '';
+    this.newLyrics = '';
+  }
+
+  removeSong(song: Song): void {
+    if (!confirm(`Remover a letra de "${song.title}"?`)) {
+      return;
+    }
+
+    this.songs = this.songs.filter((s) => s.id !== song.id);
+    if (this.expandedId === song.id) {
+      this.expandedId = null;
+    }
+    this.persist();
+  }
+
+  toggleExpanded(song: Song): void {
+    this.expandedId = this.expandedId === song.id ? null : song.id;
+  }
+
+  trackBySongId(_index: number, song: Song): string {
+    return song.id;
+  }
+
+  private generateId(): string {
+    return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+  }
+
+  private persist(): void {
+    this.lyricsApi.saveSongs(this.songs).subscribe((success) => {
+      this.saveError = !success;
+    });
+  }
+}

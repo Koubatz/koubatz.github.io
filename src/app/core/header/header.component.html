@@ -5,6 +5,9 @@
       <span class="brand-name">{{ headertitle }}</span>
     </div>
     <nav class="header-nav">
+      <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Currículo</a>
+      <a class="nav-link" routerLink="/letras" routerLinkActive="active">Letras</a>
+      <span class="nav-sep"></span>
       <a href="https://github.com/Koubatz" target="_blank" rel="noopener" aria-label="GitHub">
         <img class="icon-1-5" src="github.svg" alt="GitHub">
       </a>

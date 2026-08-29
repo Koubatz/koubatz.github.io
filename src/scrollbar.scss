@@ -1,0 +1,46 @@
+@import "./colors.scss";
+
+// Firefox
+* {
+  scrollbar-width: thin;
+  scrollbar-color: $dark-border transparent;
+}
+
+// WebKit (Chrome, Edge, Safari)
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: $dark-border;
+  border-radius: 999px;
+  border: 2px solid $dark-bg;
+  background-clip: padding-box;
+  transition: background-color 0.2s ease;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: $text-muted;
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+// Accent variant — for featured scroll areas, e.g. the lyrics auto-scroll panel
+.scrollbar-accent {
+  scrollbar-color: $accent-border transparent;
+
+  &::-webkit-scrollbar-thumb {
+    background-color: $accent-border;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: $accent;
+  }
+}

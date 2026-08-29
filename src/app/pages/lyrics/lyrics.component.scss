@@ -1,0 +1,313 @@
+@import "../../../colors.scss";
+
+:host {
+  display: block;
+
+  .lyrics-page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 4rem 2rem 6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3.5rem;
+  }
+
+  // ── Hero ──────────────────────────────────────────────────────────────
+  .hero {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      width: fit-content;
+      background-color: $accent-dim;
+      border: 1px solid $accent-border;
+      border-radius: 999px;
+      padding: 0.25rem 0.75rem;
+
+      .badge-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background-color: $accent;
+        box-shadow: 0 0 6px $accent;
+      }
+
+      .badge-label {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.6875rem;
+        color: $accent;
+        letter-spacing: 0.04em;
+      }
+    }
+
+    .hero-name {
+      font-size: 2.75rem;
+      font-weight: 700;
+      color: $text-primary;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+
+    .hero-about {
+      font-size: 1rem;
+      color: $text-secondary;
+      line-height: 1.75;
+      max-width: 640px;
+      margin: 0;
+    }
+
+    .hero-note {
+      font-size: 0.8125rem;
+      color: $accent;
+      background-color: $accent-dim;
+      border: 1px solid $accent-border;
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      line-height: 1.6;
+      max-width: 640px;
+      margin: 0;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85em;
+      color: $text-primary;
+      background-color: $dark-surface;
+      border: 1px solid $dark-border;
+      border-radius: 4px;
+      padding: 0.1rem 0.35rem;
+    }
+  }
+
+  // ── Section ───────────────────────────────────────────────────────────
+  .lyrics-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: $text-muted;
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 0;
+
+    .section-label-prefix {
+      color: $accent;
+      opacity: 0.7;
+    }
+  }
+
+  // ── Form ──────────────────────────────────────────────────────────────
+  .lyrics-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+  }
+
+  .form-row {
+    display: flex;
+    gap: 0.875rem;
+
+    .field {
+      flex: 1;
+    }
+  }
+
+  .field {
+    background-color: $dark-surface;
+    border: 1px solid $dark-border;
+    border-radius: 6px;
+    padding: 0.625rem 0.875rem;
+    color: $text-primary;
+    font-size: 0.875rem;
+    width: 100%;
+    transition: border-color 0.2s ease;
+
+    &::placeholder {
+      color: $text-muted;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: $accent-border;
+    }
+  }
+
+  .textarea {
+    resize: vertical;
+    line-height: 1.6;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8125rem;
+  }
+
+  .search-field {
+    max-width: 260px;
+  }
+
+  .btn-primary {
+    align-self: flex-start;
+    background-color: $accent-dim;
+    border: 1px solid $accent-border;
+    color: $accent;
+    border-radius: 6px;
+    padding: 0.625rem 1.25rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background-color: rgba($accent, 0.2);
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  }
+
+  // ── Empty state ───────────────────────────────────────────────────────
+  .empty-state {
+    color: $text-muted;
+    font-size: 0.875rem;
+    margin: 0;
+  }
+
+  // ── Song list ─────────────────────────────────────────────────────────
+  .song-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+  }
+
+  .song-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    border-color: $dark-border;
+    transition: border-color 0.2s ease;
+
+    &:hover {
+      border-color: lighten($dark-border, 8%);
+    }
+  }
+
+  .song-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .song-title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    .song-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: $text-primary;
+    }
+
+    .song-artist {
+      font-size: 0.8125rem;
+      color: $text-muted;
+    }
+  }
+
+  .song-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .btn-icon {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6875rem;
+    letter-spacing: 0.03em;
+    color: $text-secondary;
+    background-color: transparent;
+    border: 1px solid $dark-border;
+    border-radius: 4px;
+    padding: 0.3rem 0.6rem;
+    cursor: pointer;
+    text-decoration: none;
+    line-height: 1.4;
+    transition: border-color 0.2s ease, color 0.2s ease;
+
+    &:hover {
+      border-color: $accent-border;
+      color: $accent;
+    }
+
+    &.btn-remove:hover {
+      border-color: rgba(#e05d5d, 0.5);
+      color: #e05d5d;
+    }
+
+    &.btn-play {
+      border-color: $accent-border;
+      color: $accent;
+
+      &:hover {
+        background-color: $accent-dim;
+      }
+    }
+  }
+
+  .song-lyrics {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8125rem;
+    color: $text-secondary;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 0;
+    padding-top: 0.875rem;
+    border-top: 1px solid $dark-border-subtle;
+  }
+
+  // ── Responsive ────────────────────────────────────────────────────────
+  @media screen and (max-width: 690px) {
+    .lyrics-page {
+      padding: 2.5rem 1.25rem 4rem;
+      gap: 2.5rem;
+    }
+
+    .hero .hero-name {
+      font-size: 2rem;
+    }
+
+    .form-row {
+      flex-direction: column;
+    }
+
+    .search-field {
+      max-width: 100%;
+      width: 100%;
+    }
+  }
+}
