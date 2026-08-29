@@ -181,6 +181,23 @@
     max-width: 260px;
   }
 
+  .lyrics-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  .lyrics-sync-hint {
+    font-size: 0.75rem;
+    color: $text-muted;
+    margin: 0;
+    line-height: 1.5;
+
+    &.lyrics-sync-hint--active {
+      color: $accent;
+    }
+  }
+
   .btn-primary {
     align-self: flex-start;
     background-color: $accent-dim;
@@ -256,7 +273,8 @@
       color: $text-muted;
     }
 
-    .song-bpm {
+    .song-bpm,
+    .song-synced {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.75rem;
       color: $text-muted;

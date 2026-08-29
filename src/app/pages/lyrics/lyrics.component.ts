@@ -3,6 +3,7 @@ import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MAX_VALID_BPM, MIN_VALID_BPM } from './bpm-range';
+import { isSyncedLyrics, parseLrc } from './lrc';
 import { LyricsApiService } from './lyrics-api.service';
 import { Song } from './song.model';
 
@@ -44,6 +45,14 @@ export class LyricsComponent implements OnInit {
       this.songs = songs;
       this.loading = false;
     });
+  }
+
+  get newLyricsSyncedLineCount(): number {
+    return parseLrc(this.newLyrics).length;
+  }
+
+  isSongSynced(song: Song): boolean {
+    return isSyncedLyrics(song.lyrics);
   }
 
   get filteredSongs(): Song[] {

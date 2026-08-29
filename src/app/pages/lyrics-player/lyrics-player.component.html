@@ -9,17 +9,25 @@
   </header>
 
   <div class="player-controls">
-    <ng-container *ngIf="!isBpmLocked; else bpmLockedTpl">
-      <button class="btn-icon" type="button" (click)="decreaseSpeed()" [disabled]="speed <= minSpeed">
-        − lento
-      </button>
-      <span class="speed-label">velocidade {{ speed }}</span>
-      <button class="btn-icon" type="button" (click)="increaseSpeed()" [disabled]="speed >= maxSpeed">
-        + rápido
-      </button>
+    <ng-container *ngIf="isSyncedMode; else unsyncedControlsTpl">
+      <span class="speed-label">linha {{ activeLineIndex + 1 }}/{{ syncedLines.length }}</span>
+      <button class="btn-icon" type="button" (click)="decreaseOffset()">−0.5s</button>
+      <span class="speed-label">{{ offsetLabel }}</span>
+      <button class="btn-icon" type="button" (click)="increaseOffset()">+0.5s</button>
     </ng-container>
-    <ng-template #bpmLockedTpl>
-      <span class="speed-label">ritmo automático ({{ song.bpm }} BPM)</span>
+    <ng-template #unsyncedControlsTpl>
+      <ng-container *ngIf="!isBpmLocked; else bpmLockedTpl">
+        <button class="btn-icon" type="button" (click)="decreaseSpeed()" [disabled]="speed <= minSpeed">
+          − lento
+        </button>
+        <span class="speed-label">velocidade {{ speed }}</span>
+        <button class="btn-icon" type="button" (click)="increaseSpeed()" [disabled]="speed >= maxSpeed">
+          + rápido
+        </button>
+      </ng-container>
+      <ng-template #bpmLockedTpl>
+        <span class="speed-label">ritmo automático ({{ song.bpm }} BPM)</span>
+      </ng-template>
     </ng-template>
     <button class="btn-primary" type="button" (click)="togglePlay()">
       {{ isPlaying ? 'pausar' : 'iniciar rolagem' }}
@@ -28,7 +36,15 @@
   </div>
 
   <div class="lyrics-scroll scrollbar-accent" #scrollContainer>
-    <pre class="lyrics-text">{{ song.lyrics }}</pre>
+    <pre class="lyrics-text" *ngIf="!isSyncedMode">{{ song.lyrics }}</pre>
+    <ng-container *ngIf="isSyncedMode">
+      <div
+        class="lrc-line"
+        *ngFor="let line of syncedLines; let i = index"
+        [class.active]="i === activeLineIndex"
+        #lineEl
+      >{{ line.text }}</div>
+    </ng-container>
   </div>
 </main>
 

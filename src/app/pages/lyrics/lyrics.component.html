@@ -47,14 +47,22 @@
           [(ngModel)]="newBpm"
         />
       </div>
-      <textarea
-        class="field textarea"
-        name="lyrics"
-        rows="6"
-        placeholder="Cole aqui a letra da música *"
-        [(ngModel)]="newLyrics"
-        required
-      ></textarea>
+      <div class="lyrics-field-group">
+        <textarea
+          class="field textarea"
+          name="lyrics"
+          rows="6"
+          placeholder="Cole aqui a letra (ou no formato LRC com [mm:ss] em cada linha) *"
+          [(ngModel)]="newLyrics"
+          required
+        ></textarea>
+        <p class="lyrics-sync-hint lyrics-sync-hint--active" *ngIf="newLyricsSyncedLineCount > 0">
+          {{ newLyricsSyncedLineCount }} linha(s) sincronizada(s) detectada(s) (formato LRC).
+        </p>
+        <p class="lyrics-sync-hint" *ngIf="newLyricsSyncedLineCount === 0">
+          Dica: cole a letra no formato LRC ([mm:ss.xx]texto por linha) para sincronizar a rolagem com a música.
+        </p>
+      </div>
       <button class="btn-primary" type="submit" [disabled]="!newTitle.trim() || !newLyrics.trim()">
         Adicionar letra
       </button>
@@ -95,6 +103,7 @@
             <span class="song-title">{{ song.title }}</span>
             <span class="song-artist" *ngIf="song.artist">{{ song.artist }}</span>
             <span class="song-bpm" *ngIf="song.bpm">{{ song.bpm }} BPM</span>
+            <span class="song-synced" *ngIf="isSongSynced(song)">sincronizada</span>
           </div>
           <div class="song-actions">
             <button class="btn-icon" type="button" (click)="toggleExpanded(song)">
