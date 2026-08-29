@@ -68,7 +68,7 @@
         "deploy": {
           "builder": "angular-cli-ghpages:deploy",
           "options": {
-            "repo": "https://github.com/koubatz/koubatz.github.io.git",
+            "repo": "git@github.com:Koubatz/koubatz.github.io.git",
             "branch": "gh-pages",
             "dir": "dist/koubatz.github.io/browser"
           }
