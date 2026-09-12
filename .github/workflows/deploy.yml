@@ -1,0 +1,126 @@
+name: Propor deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: propor-deploy
+  cancel-in-progress: true
+
+jobs:
+  propor-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configurar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Testes
+        run: npx ng test --watch=false
+
+      - name: Build
+        run: npx ng build
+
+      - name: Abrir PR de deploy para gh-pages
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          BUILD_DIR="dist/koubatz.github.io/browser"
+          VERSION="$(node -p "require('./package.json').version")"
+          BRANCH="deploy/v${VERSION}"
+          TREE="${RUNNER_TEMP}/deploy-tree"
+          SHORT_SHA="${GITHUB_SHA:0:7}"
+
+          test -f "${BUILD_DIR}/index.html"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin gh-pages
+
+          # Se a branch desta versao ja existe, parte dela para o push seguir
+          # sendo fast-forward em vez de exigir force.
+          if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
+            git fetch origin "$BRANCH"
+            BASE="origin/${BRANCH}"
+          else
+            BASE="origin/gh-pages"
+          fi
+
+          git worktree add -B "$BRANCH" "$TREE" "$BASE"
+
+          # Troca o conteudo inteiro: bundles antigos com hash precisam sumir do
+          # diff, senao a gh-pages acumula arquivos orfaos a cada publicacao.
+          find "$TREE" -mindepth 1 -maxdepth 1 -not -name '.git' -exec rm -rf {} +
+          cp -R "${BUILD_DIR}/." "$TREE/"
+          cp CNAME "$TREE/CNAME"
+          touch "$TREE/.nojekyll"
+
+          # Rotas dinamicas como /letras/<id> nao sao prerenderizadas, entao o
+          # Pages cai no 404. Servir uma copia do index faz o roteador do
+          # Angular assumir dali e mantem deep link funcionando.
+          cp "$TREE/index.html" "$TREE/404.html"
+
+          cd "$TREE"
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "Build identico ao que ja esta na branch de deploy. Nada a propor."
+            exit 0
+          fi
+
+          git commit -m "deploy: v${VERSION} a partir de ${SHORT_SHA}"
+          git push origin "$BRANCH"
+
+          if [ -n "$(gh pr list --head "$BRANCH" --base gh-pages --state open --json number --jq '.[0].number')" ]; then
+            echo "PR ja aberto para ${BRANCH}; atualizado com o build novo."
+            exit 0
+          fi
+
+          BASE_HREF="$(grep -o '<base[^>]*>' index.html | head -1 || true)"
+          CNAME_CONTENT="$(cat CNAME)"
+          TOTAL="$(git ls-files | wc -l)"
+          if cmp -s index.html 404.html; then
+            NOTFOUND_OK="presente (copia do index)"
+          else
+            NOTFOUND_OK="AUSENTE OU DIVERGENTE"
+          fi
+
+          {
+            printf 'Build pronto para publicacao. O merge deste PR coloca o site no ar.\n\n'
+            printf '| item | valor |\n'
+            printf '| --- | --- |\n'
+            printf '| versao | `v%s` |\n' "$VERSION"
+            printf '| commit fonte | %s |\n' "$GITHUB_SHA"
+            printf '| base href | `%s` |\n' "$BASE_HREF"
+            printf '| CNAME | `%s` |\n' "$CNAME_CONTENT"
+            printf '| 404.html (deep link) | %s |\n' "$NOTFOUND_OK"
+            printf '| arquivos publicados | %s |\n\n' "$TOTAL"
+            printf 'Os bundles tem hash no nome, entao a cada build eles aparecem como\n'
+            printf 'arquivo removido + arquivo adicionado. O que vale revisar no diff e\n'
+            printf '`index.html`, `CNAME` e a lista de arquivos acima.\n'
+          } > "${RUNNER_TEMP}/pr-body.md"
+
+          gh pr create \
+            --base gh-pages \
+            --head "$BRANCH" \
+            --title "Deploy v${VERSION} (${SHORT_SHA})" \
+            --body-file "${RUNNER_TEMP}/pr-body.md"

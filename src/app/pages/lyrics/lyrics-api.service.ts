@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, catchError, map, of } from 'rxjs';
 import { Song } from './song.model';
 
@@ -8,7 +8,7 @@ const SONGS_API_URL = '/api/songs';
 
 @Injectable({ providedIn: 'root' })
 export class LyricsApiService {
-  constructor(private readonly http: HttpClient) {}
+  private readonly http = inject(HttpClient);
 
   getSongs(): Observable<Song[]> {
     return this.http.get<Song[]>(SONGS_ASSET_URL).pipe(catchError(() => of([])));

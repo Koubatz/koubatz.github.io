@@ -1,16 +1,17 @@
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import {
   Component,
   ElementRef,
-  Inject,
   OnDestroy,
   OnInit,
   PLATFORM_ID,
-  QueryList,
-  ViewChild,
-  ViewChildren,
+  computed,
+  inject,
+  signal,
+  viewChild,
+  viewChildren,
 } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { LyricsApiService } from '../lyrics/lyrics-api.service';
 import { MAX_VALID_BPM, MIN_VALID_BPM } from '../lyrics/bpm-range';
 import { LrcLine, parseLrc } from '../lyrics/lrc';
@@ -25,58 +26,64 @@ const OFFSET_STEP_MS = 500;
 
 @Component({
   selector: 'app-lyrics-player',
-  standalone: true,
-  imports: [CommonModule, RouterLink],
   templateUrl: './lyrics-player.component.html',
   styleUrl: './lyrics-player.component.scss',
 })
 export class LyricsPlayerComponent implements OnInit, OnDestroy {
-  @ViewChild('scrollContainer') scrollContainerRef?: ElementRef<HTMLElement>;
-  @ViewChildren('lineEl') lineElements!: QueryList<ElementRef<HTMLElement>>;
+  private readonly scrollContainerRef = viewChild<ElementRef<HTMLElement>>('scrollContainer');
+  private readonly lineElements = viewChildren<ElementRef<HTMLElement>>('lineEl');
 
-  song: Song | null = null;
-  checkedStorage = false;
-  isPlaying = false;
-  speed = 3;
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly lyricsApi = inject(LyricsApiService);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
+  readonly song = signal<Song | null>(null);
+  readonly checkedStorage = signal(false);
+  readonly isPlaying = signal(false);
+  readonly speed = signal(3);
 
   // Synced (LRC) playback state — populated in ngOnInit when the song's
   // lyrics contain LRC timestamp tags. When empty, the player falls back to
   // the original continuous pixel-scroll engine below, completely unchanged.
-  syncedLines: LrcLine[] = [];
-  activeLineIndex = -1;
+  readonly syncedLines = signal<LrcLine[]>([]);
+  readonly activeLineIndex = signal(-1);
+  private readonly offsetMs = signal(0);
 
   readonly minSpeed = MIN_SPEED;
   readonly maxSpeed = MAX_SPEED;
 
-  private readonly isBrowser: boolean;
+  /** True when the song's lyrics contain LRC timestamps — takes priority over bpm. */
+  readonly isSyncedMode = computed(() => this.syncedLines().length > 0);
+
+  /** True when the current song has a usable BPM and playback is tempo-locked to it. */
+  readonly isBpmLocked = computed(() => this.isValidBpm(this.song()?.bpm));
+
+  /** e.g. "ajuste: +0.5s" / "ajuste: 0.0s" / "ajuste: -1.0s" */
+  readonly offsetLabel = computed(() => {
+    const seconds = this.offsetMs() / 1000;
+    const sign = seconds > 0 ? '+' : '';
+    return `ajuste: ${sign}${seconds.toFixed(1)}s`;
+  });
+
+  // Frame-loop state deliberately kept off the signal graph: these change on
+  // every frame but nothing renders them, so making them reactive would
+  // schedule change detection 60 times a second for no visible effect.
   private animationFrameId: number | null = null;
   private lastTimestamp: number | null = null;
   private scrollPosition = 0;
-
-  // Synced-mode accumulators, mirroring scrollPosition's pattern: our own
-  // running float total, only ever written forward from deltaMs — never
-  // derived by reading anything back from the DOM/browser.
   private elapsedMs = 0;
-  private offsetMs = 0;
-
-  constructor(
-    private readonly route: ActivatedRoute,
-    private readonly router: Router,
-    private readonly lyricsApi: LyricsApiService,
-    @Inject(PLATFORM_ID) platformId: object
-  ) {
-    this.isBrowser = isPlatformBrowser(platformId);
-  }
 
   ngOnInit(): void {
     if (!this.isBrowser) {
       return;
     }
     const id = this.route.snapshot.paramMap.get('id');
-    this.lyricsApi.getSongs().subscribe((songs) => {
-      this.song = songs.find((song) => song.id === id) ?? null;
-      this.syncedLines = this.song ? parseLrc(this.song.lyrics) : [];
-      this.checkedStorage = true;
+    this.lyricsApi.getSongs().subscribe(songs => {
+      const song = songs.find(candidate => candidate.id === id) ?? null;
+      this.song.set(song);
+      this.syncedLines.set(song ? parseLrc(song.lyrics) : []);
+      this.checkedStorage.set(true);
     });
   }
 
@@ -85,7 +92,7 @@ export class LyricsPlayerComponent implements OnInit, OnDestroy {
   }
 
   togglePlay(): void {
-    if (this.isPlaying) {
+    if (this.isPlaying()) {
       this.stop();
     } else {
       this.play();
@@ -93,19 +100,19 @@ export class LyricsPlayerComponent implements OnInit, OnDestroy {
   }
 
   play(): void {
-    if (!this.isBrowser || this.isPlaying) {
+    if (!this.isBrowser || this.isPlaying()) {
       return;
     }
-    if (!this.isSyncedMode) {
-      this.scrollPosition = this.scrollContainerRef?.nativeElement.scrollTop ?? 0;
+    if (!this.isSyncedMode()) {
+      this.scrollPosition = this.scrollContainerRef()?.nativeElement.scrollTop ?? 0;
     }
-    this.isPlaying = true;
+    this.isPlaying.set(true);
     this.lastTimestamp = null;
     this.animationFrameId = requestAnimationFrame(this.step);
   }
 
   stop(): void {
-    this.isPlaying = false;
+    this.isPlaying.set(false);
     if (this.animationFrameId !== null) {
       cancelAnimationFrame(this.animationFrameId);
       this.animationFrameId = null;
@@ -115,51 +122,34 @@ export class LyricsPlayerComponent implements OnInit, OnDestroy {
 
   restart(): void {
     this.stop();
-    if (this.isSyncedMode) {
+    if (this.isSyncedMode()) {
       this.elapsedMs = 0;
-      this.offsetMs = 0;
-      this.activeLineIndex = -1;
+      this.offsetMs.set(0);
+      this.activeLineIndex.set(-1);
     } else {
       this.scrollPosition = 0;
-      this.scrollContainerRef?.nativeElement.scrollTo({ top: 0 });
+      this.scrollContainerRef()?.nativeElement.scrollTo({ top: 0 });
     }
   }
 
   increaseSpeed(): void {
-    this.speed = Math.min(this.speed + 1, MAX_SPEED);
+    this.speed.update(speed => Math.min(speed + 1, MAX_SPEED));
   }
 
   decreaseSpeed(): void {
-    this.speed = Math.max(this.speed - 1, MIN_SPEED);
+    this.speed.update(speed => Math.max(speed - 1, MIN_SPEED));
   }
 
   increaseOffset(): void {
-    this.offsetMs += OFFSET_STEP_MS;
+    this.offsetMs.update(offset => offset + OFFSET_STEP_MS);
   }
 
   decreaseOffset(): void {
-    this.offsetMs -= OFFSET_STEP_MS;
-  }
-
-  /** e.g. "ajuste: +0.5s" / "ajuste: 0.0s" / "ajuste: -1.0s" */
-  get offsetLabel(): string {
-    const seconds = this.offsetMs / 1000;
-    const sign = seconds > 0 ? '+' : '';
-    return `ajuste: ${sign}${seconds.toFixed(1)}s`;
+    this.offsetMs.update(offset => offset - OFFSET_STEP_MS);
   }
 
   goBack(): void {
     this.router.navigate(['/letras']);
-  }
-
-  /** True when the song's lyrics contain LRC timestamps — takes priority over bpm. */
-  get isSyncedMode(): boolean {
-    return this.syncedLines.length > 0;
-  }
-
-  /** True when the current song has a usable BPM and playback is tempo-locked to it. */
-  get isBpmLocked(): boolean {
-    return this.isValidBpm(this.song?.bpm);
   }
 
   private isValidBpm(bpm: number | undefined): bpm is number {
@@ -173,39 +163,40 @@ export class LyricsPlayerComponent implements OnInit, OnDestroy {
    * Otherwise it falls back to the manual speed knob (1-10) scaled linearly.
    */
   private getPixelsPerSecond(): number {
-    const bpm = this.song?.bpm;
+    const bpm = this.song()?.bpm;
     if (this.isValidBpm(bpm)) {
       const clampedBpm = Math.min(Math.max(bpm, MIN_VALID_BPM), MAX_VALID_BPM);
       return (clampedBpm / 60) * PIXELS_PER_BEAT;
     }
-    return this.speed * PIXELS_PER_SECOND_PER_SPEED;
+    return this.speed() * PIXELS_PER_SECOND_PER_SPEED;
   }
 
   private updateActiveLine(): void {
-    const adjustedElapsedSeconds = (this.elapsedMs + this.offsetMs) / 1000;
+    const lines = this.syncedLines();
+    const adjustedElapsedSeconds = (this.elapsedMs + this.offsetMs()) / 1000;
     let newIndex = -1;
-    for (let i = 0; i < this.syncedLines.length; i++) {
-      if (this.syncedLines[i].time <= adjustedElapsedSeconds) {
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].time <= adjustedElapsedSeconds) {
         newIndex = i;
       }
     }
 
-    if (newIndex !== this.activeLineIndex) {
-      this.activeLineIndex = newIndex;
-      this.scrollActiveLineIntoView();
+    if (newIndex !== this.activeLineIndex()) {
+      this.activeLineIndex.set(newIndex);
+      this.scrollActiveLineIntoView(newIndex);
     }
   }
 
-  private scrollActiveLineIntoView(): void {
-    if (!this.isBrowser || this.activeLineIndex < 0) {
+  private scrollActiveLineIntoView(index: number): void {
+    if (!this.isBrowser || index < 0) {
       return;
     }
-    const activeElement = this.lineElements?.toArray()[this.activeLineIndex];
-    activeElement?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    this.lineElements()
+      [index]?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   private readonly step = (timestamp: number): void => {
-    const container = this.scrollContainerRef?.nativeElement;
+    const container = this.scrollContainerRef()?.nativeElement;
     if (!container) {
       this.stop();
       return;
@@ -214,7 +205,7 @@ export class LyricsPlayerComponent implements OnInit, OnDestroy {
     if (this.lastTimestamp !== null) {
       const deltaMs = Math.min(timestamp - this.lastTimestamp, MAX_FRAME_DELTA_MS);
 
-      if (this.isSyncedMode) {
+      if (this.isSyncedMode()) {
         this.elapsedMs += deltaMs;
         this.updateActiveLine();
       } else {

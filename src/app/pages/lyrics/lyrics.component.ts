@@ -1,5 +1,5 @@
-import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Component, OnInit, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MAX_VALID_BPM, MIN_VALID_BPM } from './bpm-range';
@@ -9,91 +9,79 @@ import { Song } from './song.model';
 
 @Component({
   selector: 'app-lyrics',
-  standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink],
   templateUrl: './lyrics.component.html',
   styleUrl: './lyrics.component.scss',
 })
 export class LyricsComponent implements OnInit {
-  songs: Song[] = [];
-  search = '';
-  expandedId: string | null = null;
-  loading = true;
-  saveError = false;
+  private readonly lyricsApi = inject(LyricsApiService);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  newTitle = '';
-  newArtist = '';
-  newLyrics = '';
-  newBpm: number | null = null;
+  readonly songs = signal<Song[]>([]);
+  readonly search = signal('');
+  readonly expandedId = signal<string | null>(null);
+  readonly loading = signal(true);
+  readonly saveError = signal(false);
 
-  private readonly isBrowser: boolean;
+  readonly newTitle = signal('');
+  readonly newArtist = signal('');
+  readonly newLyrics = signal('');
+  readonly newBpm = signal<number | null>(null);
 
-  constructor(
-    private readonly lyricsApi: LyricsApiService,
-    @Inject(PLATFORM_ID) platformId: object
-  ) {
-    this.isBrowser = isPlatformBrowser(platformId);
-  }
+  readonly newLyricsSyncedLineCount = computed(() => parseLrc(this.newLyrics()).length);
+
+  readonly filteredSongs = computed(() => {
+    const term = this.search().trim().toLowerCase();
+    const songs = this.songs();
+    if (!term) {
+      return songs;
+    }
+    return songs.filter(
+      song => song.title.toLowerCase().includes(term) || song.artist.toLowerCase().includes(term)
+    );
+  });
 
   ngOnInit(): void {
     if (!this.isBrowser) {
-      this.loading = false;
+      this.loading.set(false);
       return;
     }
 
-    this.lyricsApi.getSongs().subscribe((songs) => {
-      this.songs = songs;
-      this.loading = false;
+    this.lyricsApi.getSongs().subscribe(songs => {
+      this.songs.set(songs);
+      this.loading.set(false);
     });
-  }
-
-  get newLyricsSyncedLineCount(): number {
-    return parseLrc(this.newLyrics).length;
   }
 
   isSongSynced(song: Song): boolean {
     return isSyncedLyrics(song.lyrics);
   }
 
-  get filteredSongs(): Song[] {
-    const term = this.search.trim().toLowerCase();
-    if (!term) {
-      return this.songs;
-    }
-    return this.songs.filter(
-      (song) =>
-        song.title.toLowerCase().includes(term) ||
-        song.artist.toLowerCase().includes(term)
-    );
-  }
-
   addSong(): void {
-    const title = this.newTitle.trim();
-    const lyrics = this.newLyrics.trim();
+    const title = this.newTitle().trim();
+    const lyrics = this.newLyrics().trim();
     if (!title || !lyrics) {
       return;
     }
 
+    const bpm = this.newBpm();
     const hasValidBpm =
-      typeof this.newBpm === 'number' &&
-      Number.isFinite(this.newBpm) &&
-      this.newBpm >= MIN_VALID_BPM &&
-      this.newBpm <= MAX_VALID_BPM;
+      typeof bpm === 'number' && Number.isFinite(bpm) && bpm >= MIN_VALID_BPM && bpm <= MAX_VALID_BPM;
     const song: Song = {
       id: this.generateId(),
       title,
-      artist: this.newArtist.trim(),
+      artist: this.newArtist().trim(),
       lyrics,
-      ...(hasValidBpm ? { bpm: this.newBpm as number } : {}),
+      ...(hasValidBpm ? { bpm } : {}),
     };
 
-    this.songs = [song, ...this.songs];
+    this.songs.update(songs => [song, ...songs]);
     this.persist();
 
-    this.newTitle = '';
-    this.newArtist = '';
-    this.newLyrics = '';
-    this.newBpm = null;
+    this.newTitle.set('');
+    this.newArtist.set('');
+    this.newLyrics.set('');
+    this.newBpm.set(null);
   }
 
   removeSong(song: Song): void {
@@ -101,19 +89,15 @@ export class LyricsComponent implements OnInit {
       return;
     }
 
-    this.songs = this.songs.filter((s) => s.id !== song.id);
-    if (this.expandedId === song.id) {
-      this.expandedId = null;
+    this.songs.update(songs => songs.filter(candidate => candidate.id !== song.id));
+    if (this.expandedId() === song.id) {
+      this.expandedId.set(null);
     }
     this.persist();
   }
 
   toggleExpanded(song: Song): void {
-    this.expandedId = this.expandedId === song.id ? null : song.id;
-  }
-
-  trackBySongId(_index: number, song: Song): string {
-    return song.id;
+    this.expandedId.update(current => (current === song.id ? null : song.id));
   }
 
   private generateId(): string {
@@ -121,8 +105,8 @@ export class LyricsComponent implements OnInit {
   }
 
   private persist(): void {
-    this.lyricsApi.saveSongs(this.songs).subscribe((success) => {
-      this.saveError = !success;
+    this.lyricsApi.saveSongs(this.songs()).subscribe(success => {
+      this.saveError.set(!success);
     });
   }
 }

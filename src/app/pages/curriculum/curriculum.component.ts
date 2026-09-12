@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 interface Bullet {
   title: string;
@@ -22,8 +21,7 @@ interface Education {
 
 @Component({
   selector: 'app-curriculum',
-  standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './curriculum.component.html',
   styleUrl: './curriculum.component.scss',
 })
