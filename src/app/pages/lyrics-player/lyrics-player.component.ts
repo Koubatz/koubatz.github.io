@@ -123,13 +123,15 @@ export class LyricsPlayerComponent implements OnInit, OnDestroy {
   restart(): void {
     this.stop();
     if (this.isSyncedMode()) {
+      // offsetMs survives on purpose: it is calibrated per song against an
+      // external audio source, so restarting playback should not throw away
+      // the tuning that was just dialled in.
       this.elapsedMs = 0;
-      this.offsetMs.set(0);
       this.activeLineIndex.set(-1);
     } else {
       this.scrollPosition = 0;
-      this.scrollContainerRef()?.nativeElement.scrollTo({ top: 0 });
     }
+    this.scrollContainerRef()?.nativeElement.scrollTo({ top: 0 });
   }
 
   increaseSpeed(): void {
