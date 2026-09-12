@@ -128,8 +128,8 @@ export class LyricsPlayerComponent implements OnInit, OnDestroy {
       this.activeLineIndex.set(-1);
     } else {
       this.scrollPosition = 0;
-      this.scrollContainerRef()?.nativeElement.scrollTo({ top: 0 });
     }
+    this.scrollContainerRef()?.nativeElement.scrollTo({ top: 0 });
   }
 
   increaseSpeed(): void {
