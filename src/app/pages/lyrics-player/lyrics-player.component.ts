@@ -24,11 +24,10 @@ const PIXELS_PER_BEAT = 6;
 const OFFSET_STEP_MS = 500;
 
 @Component({
-  selector: 'app-lyrics-player',
-  standalone: true,
-  imports: [CommonModule, RouterLink],
-  templateUrl: './lyrics-player.component.html',
-  styleUrl: './lyrics-player.component.scss',
+    selector: 'app-lyrics-player',
+    imports: [CommonModule, RouterLink],
+    templateUrl: './lyrics-player.component.html',
+    styleUrl: './lyrics-player.component.scss'
 })
 export class LyricsPlayerComponent implements OnInit, OnDestroy {
   @ViewChild('scrollContainer') scrollContainerRef?: ElementRef<HTMLElement>;

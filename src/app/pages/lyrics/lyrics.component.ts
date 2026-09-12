@@ -8,11 +8,10 @@ import { LyricsApiService } from './lyrics-api.service';
 import { Song } from './song.model';
 
 @Component({
-  selector: 'app-lyrics',
-  standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
-  templateUrl: './lyrics.component.html',
-  styleUrl: './lyrics.component.scss',
+    selector: 'app-lyrics',
+    imports: [CommonModule, FormsModule, RouterLink],
+    templateUrl: './lyrics.component.html',
+    styleUrl: './lyrics.component.scss'
 })
 export class LyricsComponent implements OnInit {
   songs: Song[] = [];

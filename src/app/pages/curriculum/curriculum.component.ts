@@ -21,11 +21,10 @@ interface Education {
 }
 
 @Component({
-  selector: 'app-curriculum',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './curriculum.component.html',
-  styleUrl: './curriculum.component.scss',
+    selector: 'app-curriculum',
+    imports: [CommonModule],
+    templateUrl: './curriculum.component.html',
+    styleUrl: './curriculum.component.scss'
 })
 export class CurriculumComponent {
   name = 'Luiz Koubatz';
