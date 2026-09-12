@@ -77,7 +77,6 @@ describe('LyricsPlayerComponent', () => {
     const fixture = await renderPlayer(SYNCED_SONG);
     const component = fixture.componentInstance;
 
-    component.increaseOffset();
     component.activeLineIndex.set(1);
     stubScrollTo(fixture);
 
@@ -85,6 +84,18 @@ describe('LyricsPlayerComponent', () => {
 
     expect(component.isPlaying()).toBe(false);
     expect(component.activeLineIndex()).toBe(-1);
-    expect(component.offsetLabel()).toBe('ajuste: 0.0s');
+  });
+
+  it('keeps the timing offset across a restart', async () => {
+    const fixture = await renderPlayer(SYNCED_SONG);
+    const component = fixture.componentInstance;
+    stubScrollTo(fixture);
+
+    component.increaseOffset();
+    expect(component.offsetLabel()).toBe('ajuste: +0.5s');
+
+    component.restart();
+
+    expect(component.offsetLabel()).toBe('ajuste: +0.5s');
   });
 });
