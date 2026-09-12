@@ -1,3 +1,8 @@
+// Under @use every file has its own scope, so the colour variables this
+// stylesheet renders with have to be pulled in here rather than inherited
+// from whoever loads it.
+@use "sass:color";
+@use "./colors.scss" as *;
 
 $font-sans:  'Inter', system-ui, -apple-system, sans-serif;
 $font-mono:  'JetBrains Mono', 'Fira Code', monospace;
@@ -56,7 +61,7 @@ a {
   color: $accent;
 
   &:hover {
-    color: lighten($accent, 10%);
+    color: color.adjust($accent, $lightness: 10%);
   }
 }
 

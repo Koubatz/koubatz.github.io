@@ -1,4 +1,5 @@
-@import "../../../colors.scss";
+@use "sass:color";
+@use "../../../colors.scss" as *;
 
 :host {
   display: block;
@@ -179,7 +180,7 @@
     transition: border-color 0.2s ease;
 
     &:hover {
-      border-color: lighten($dark-border, 8%);
+      border-color: color.adjust($dark-border, $lightness: 8%);
     }
   }
 

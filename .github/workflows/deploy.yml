@@ -32,6 +32,9 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
+      - name: Testes
+        run: npx ng test --watch=false
+
       - name: Build
         run: npx ng build
 

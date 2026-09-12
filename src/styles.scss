@@ -1,6 +1,6 @@
-@import "./colors.scss";
-@import "./fonts.scss";
-@import "./scrollbar.scss";
+@use "./colors.scss" as *;
+@use "./fonts.scss" as *;
+@use "./scrollbar.scss" as *;
 
 *,
 *::before,
