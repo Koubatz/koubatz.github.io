@@ -1,0 +1,4 @@
+# Todo o repositorio pertence ao dono da conta.
+# Com "Require review from Code Owners" ligado na protecao de branch, nenhum PR
+# entra sem aprovacao dele.
+* @Koubatz

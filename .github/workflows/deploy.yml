@@ -19,12 +19,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Configurar Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -61,8 +61,10 @@ jobs:
           if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
             git fetch origin "$BRANCH"
             BASE="origin/${BRANCH}"
+            BRANCH_EXISTED=true
           else
             BASE="origin/gh-pages"
+            BRANCH_EXISTED=false
           fi
 
           git worktree add -B "$BRANCH" "$TREE" "$BASE"
@@ -83,12 +85,19 @@ jobs:
           git add -A
 
           if git diff --cached --quiet; then
-            echo "Build identico ao que ja esta na branch de deploy. Nada a propor."
-            exit 0
+            # Sem a branch, "sem mudancas" significa que o build ja e o que esta
+            # publicado. Com a branch, significa que um run anterior ja commitou
+            # este build — e pode ter morrido antes de abrir o PR, entao seguimos
+            # para a verificacao de PR em vez de sair aqui.
+            if [ "$BRANCH_EXISTED" != "true" ]; then
+              echo "Build identico ao que ja esta publicado. Nada a propor."
+              exit 0
+            fi
+            echo "Branch de deploy ja contem este build; verificando o PR."
+          else
+            git commit -m "deploy: v${VERSION} a partir de ${SHORT_SHA}"
+            git push origin "$BRANCH"
           fi
-
-          git commit -m "deploy: v${VERSION} a partir de ${SHORT_SHA}"
-          git push origin "$BRANCH"
 
           if [ -n "$(gh pr list --head "$BRANCH" --base gh-pages --state open --json number --jq '.[0].number')" ]; then
             echo "PR ja aberto para ${BRANCH}; atualizado com o build novo."
