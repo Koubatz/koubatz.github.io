@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 interface Bullet {
   title: string;
@@ -21,10 +20,10 @@ interface Education {
 }
 
 @Component({
-    selector: 'app-curriculum',
-    imports: [CommonModule],
-    templateUrl: './curriculum.component.html',
-    styleUrl: './curriculum.component.scss'
+  selector: 'app-curriculum',
+  imports: [],
+  templateUrl: './curriculum.component.html',
+  styleUrl: './curriculum.component.scss',
 })
 export class CurriculumComponent {
   name = 'Luiz Koubatz';

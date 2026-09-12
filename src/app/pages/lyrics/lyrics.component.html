@@ -6,13 +6,17 @@
     </div>
     <h1 class="hero-name">Letras de Músicas</h1>
     <p class="hero-about">
-      Guarde, organize e remova letras das suas músicas favoritas. Os dados ficam salvos em um arquivo do próprio
-      projeto (<code>public/data/lyrics.json</code>), disponível em qualquer dispositivo que abrir o site.
+      Guarde, organize e remova letras das suas músicas favoritas. Os dados ficam salvos em um
+      arquivo do próprio projeto (<code>public/data/lyrics.json</code>), disponível em qualquer
+      dispositivo que abrir o site.
     </p>
-    <p class="hero-note" *ngIf="saveError">
-      Não foi possível salvar a alteração no arquivo do projeto. Rode <code>npm run lyrics-server</code> localmente
-      (junto com <code>npm start</code>) para editar as letras — no site publicado, a edição é somente leitura.
-    </p>
+    @if (saveError) {
+      <p class="hero-note">
+        Não foi possível salvar a alteração no arquivo do projeto. Rode
+        <code>npm run lyrics-server</code> localmente (junto com <code>npm start</code>) para editar
+        as letras — no site publicado, a edição é somente leitura.
+      </p>
+    }
   </section>
 
   <hr class="divider" />
@@ -28,15 +32,13 @@
           name="title"
           placeholder="Título da música *"
           [(ngModel)]="newTitle"
-          required
-        />
+          required />
         <input
           class="field"
           type="text"
           name="artist"
           placeholder="Artista"
-          [(ngModel)]="newArtist"
-        />
+          [(ngModel)]="newArtist" />
         <input
           class="field field-bpm"
           type="number"
@@ -44,8 +46,7 @@
           placeholder="BPM"
           min="30"
           max="300"
-          [(ngModel)]="newBpm"
-        />
+          [(ngModel)]="newBpm" />
       </div>
       <div class="lyrics-field-group">
         <textarea
@@ -54,14 +55,18 @@
           rows="6"
           placeholder="Cole aqui a letra (ou no formato LRC com [mm:ss] em cada linha) *"
           [(ngModel)]="newLyrics"
-          required
-        ></textarea>
-        <p class="lyrics-sync-hint lyrics-sync-hint--active" *ngIf="newLyricsSyncedLineCount > 0">
-          {{ newLyricsSyncedLineCount }} linha(s) sincronizada(s) detectada(s) (formato LRC).
-        </p>
-        <p class="lyrics-sync-hint" *ngIf="newLyricsSyncedLineCount === 0">
-          Dica: cole a letra no formato LRC ([mm:ss.xx]texto por linha) para sincronizar a rolagem com a música.
-        </p>
+          required></textarea>
+        @if (newLyricsSyncedLineCount > 0) {
+          <p class="lyrics-sync-hint lyrics-sync-hint--active">
+            {{ newLyricsSyncedLineCount }} linha(s) sincronizada(s) detectada(s) (formato LRC).
+          </p>
+        }
+        @if (newLyricsSyncedLineCount === 0) {
+          <p class="lyrics-sync-hint">
+            Dica: cole a letra no formato LRC ([mm:ss.xx]texto por linha) para sincronizar a rolagem
+            com a música.
+          </p>
+        }
       </div>
       <button class="btn-primary" type="submit" [disabled]="!newTitle.trim() || !newLyrics.trim()">
         Adicionar letra
@@ -76,49 +81,63 @@
       <h2 class="section-label">
         <span class="section-label-prefix">// </span>minhas letras ({{ songs.length }})
       </h2>
-      <input
-        *ngIf="songs.length"
-        class="field search-field"
-        type="text"
-        placeholder="Buscar por título ou artista..."
-        [(ngModel)]="search"
-        [ngModelOptions]="{ standalone: true }"
-      />
+      @if (songs.length) {
+        <input
+          class="field search-field"
+          type="text"
+          placeholder="Buscar por título ou artista..."
+          [(ngModel)]="search"
+          [ngModelOptions]="{ standalone: true }" />
+      }
     </div>
 
-    <p class="empty-state" *ngIf="loading">Carregando letras...</p>
+    @if (loading) {
+      <p class="empty-state">Carregando letras...</p>
+    }
 
-    <p class="empty-state" *ngIf="!loading && !songs.length">
-      Nenhuma letra cadastrada ainda. Adicione a primeira acima.
-    </p>
+    @if (!loading && !songs.length) {
+      <p class="empty-state">Nenhuma letra cadastrada ainda. Adicione a primeira acima.</p>
+    }
 
-    <p class="empty-state" *ngIf="!loading && songs.length && !filteredSongs.length">
-      Nenhuma letra encontrada para &quot;{{ search }}&quot;.
-    </p>
+    @if (!loading && songs.length && !filteredSongs.length) {
+      <p class="empty-state">Nenhuma letra encontrada para &quot;{{ search }}&quot;.</p>
+    }
 
-    <ul class="song-list" *ngIf="!loading && filteredSongs.length">
-      <li class="song-card card" *ngFor="let song of filteredSongs; trackBy: trackBySongId">
-        <div class="song-header">
-          <div class="song-title-group">
-            <span class="song-title">{{ song.title }}</span>
-            <span class="song-artist" *ngIf="song.artist">{{ song.artist }}</span>
-            <span class="song-bpm" *ngIf="song.bpm">{{ song.bpm }} BPM</span>
-            <span class="song-synced" *ngIf="isSongSynced(song)">sincronizada</span>
-          </div>
-          <div class="song-actions">
-            <button class="btn-icon" type="button" (click)="toggleExpanded(song)">
-              {{ expandedId === song.id ? 'ocultar' : 'ver letra' }}
-            </button>
-            <a class="btn-icon btn-play" [routerLink]="['/letras', song.id]">
-              tocar com rolagem
-            </a>
-            <button class="btn-icon btn-remove" type="button" (click)="removeSong(song)">
-              remover
-            </button>
-          </div>
-        </div>
-        <pre class="song-lyrics" *ngIf="expandedId === song.id">{{ song.lyrics }}</pre>
-      </li>
-    </ul>
+    @if (!loading && filteredSongs.length) {
+      <ul class="song-list">
+        @for (song of filteredSongs; track trackBySongId($index, song)) {
+          <li class="song-card card">
+            <div class="song-header">
+              <div class="song-title-group">
+                <span class="song-title">{{ song.title }}</span>
+                @if (song.artist) {
+                  <span class="song-artist">{{ song.artist }}</span>
+                }
+                @if (song.bpm) {
+                  <span class="song-bpm">{{ song.bpm }} BPM</span>
+                }
+                @if (isSongSynced(song)) {
+                  <span class="song-synced">sincronizada</span>
+                }
+              </div>
+              <div class="song-actions">
+                <button class="btn-icon" type="button" (click)="toggleExpanded(song)">
+                  {{ expandedId === song.id ? 'ocultar' : 'ver letra' }}
+                </button>
+                <a class="btn-icon btn-play" [routerLink]="['/letras', song.id]">
+                  tocar com rolagem
+                </a>
+                <button class="btn-icon btn-remove" type="button" (click)="removeSong(song)">
+                  remover
+                </button>
+              </div>
+            </div>
+            @if (expandedId === song.id) {
+              <pre class="song-lyrics">{{ song.lyrics }}</pre>
+            }
+          </li>
+        }
+      </ul>
+    }
   </section>
 </main>

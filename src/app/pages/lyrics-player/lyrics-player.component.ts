@@ -1,4 +1,4 @@
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import {
   Component,
   ElementRef,
@@ -24,10 +24,10 @@ const PIXELS_PER_BEAT = 6;
 const OFFSET_STEP_MS = 500;
 
 @Component({
-    selector: 'app-lyrics-player',
-    imports: [CommonModule, RouterLink],
-    templateUrl: './lyrics-player.component.html',
-    styleUrl: './lyrics-player.component.scss'
+  selector: 'app-lyrics-player',
+  imports: [RouterLink],
+  templateUrl: './lyrics-player.component.html',
+  styleUrl: './lyrics-player.component.scss',
 })
 export class LyricsPlayerComponent implements OnInit, OnDestroy {
   @ViewChild('scrollContainer') scrollContainerRef?: ElementRef<HTMLElement>;
@@ -72,8 +72,8 @@ export class LyricsPlayerComponent implements OnInit, OnDestroy {
       return;
     }
     const id = this.route.snapshot.paramMap.get('id');
-    this.lyricsApi.getSongs().subscribe((songs) => {
-      this.song = songs.find((song) => song.id === id) ?? null;
+    this.lyricsApi.getSongs().subscribe(songs => {
+      this.song = songs.find(song => song.id === id) ?? null;
       this.syncedLines = this.song ? parseLrc(this.song.lyrics) : [];
       this.checkedStorage = true;
     });

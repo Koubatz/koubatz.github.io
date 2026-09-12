@@ -1,4 +1,4 @@
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -8,10 +8,10 @@ import { LyricsApiService } from './lyrics-api.service';
 import { Song } from './song.model';
 
 @Component({
-    selector: 'app-lyrics',
-    imports: [CommonModule, FormsModule, RouterLink],
-    templateUrl: './lyrics.component.html',
-    styleUrl: './lyrics.component.scss'
+  selector: 'app-lyrics',
+  imports: [FormsModule, RouterLink],
+  templateUrl: './lyrics.component.html',
+  styleUrl: './lyrics.component.scss',
 })
 export class LyricsComponent implements OnInit {
   songs: Song[] = [];
@@ -40,7 +40,7 @@ export class LyricsComponent implements OnInit {
       return;
     }
 
-    this.lyricsApi.getSongs().subscribe((songs) => {
+    this.lyricsApi.getSongs().subscribe(songs => {
       this.songs = songs;
       this.loading = false;
     });
@@ -60,9 +60,7 @@ export class LyricsComponent implements OnInit {
       return this.songs;
     }
     return this.songs.filter(
-      (song) =>
-        song.title.toLowerCase().includes(term) ||
-        song.artist.toLowerCase().includes(term)
+      song => song.title.toLowerCase().includes(term) || song.artist.toLowerCase().includes(term)
     );
   }
 
@@ -100,7 +98,7 @@ export class LyricsComponent implements OnInit {
       return;
     }
 
-    this.songs = this.songs.filter((s) => s.id !== song.id);
+    this.songs = this.songs.filter(s => s.id !== song.id);
     if (this.expandedId === song.id) {
       this.expandedId = null;
     }
@@ -120,7 +118,7 @@ export class LyricsComponent implements OnInit {
   }
 
   private persist(): void {
-    this.lyricsApi.saveSongs(this.songs).subscribe((success) => {
+    this.lyricsApi.saveSongs(this.songs).subscribe(success => {
       this.saveError = !success;
     });
   }
