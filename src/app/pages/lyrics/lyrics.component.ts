@@ -1,5 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { Component, Inject, OnInit, PLATFORM_ID, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MAX_VALID_BPM, MIN_VALID_BPM } from './bpm-range';
@@ -11,6 +11,7 @@ import { Song } from './song.model';
   selector: 'app-lyrics',
   imports: [FormsModule, RouterLink],
   templateUrl: './lyrics.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './lyrics.component.scss',
 })
 export class LyricsComponent implements OnInit {

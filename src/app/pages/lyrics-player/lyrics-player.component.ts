@@ -9,6 +9,7 @@ import {
   QueryList,
   ViewChild,
   ViewChildren,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LyricsApiService } from '../lyrics/lyrics-api.service';
@@ -27,6 +28,7 @@ const OFFSET_STEP_MS = 500;
   selector: 'app-lyrics-player',
   imports: [RouterLink],
   templateUrl: './lyrics-player.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './lyrics-player.component.scss',
 })
 export class LyricsPlayerComponent implements OnInit, OnDestroy {

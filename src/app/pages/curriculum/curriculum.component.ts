@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 interface Bullet {
   title: string;
@@ -23,6 +23,7 @@ interface Education {
   selector: 'app-curriculum',
   imports: [],
   templateUrl: './curriculum.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './curriculum.component.scss',
 })
 export class CurriculumComponent {
