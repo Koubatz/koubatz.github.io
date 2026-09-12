@@ -1,4 +1,4 @@
-@if (song) {
+@if (song(); as song) {
   <main class="player-page">
     <header class="player-header">
       <button class="btn-icon" type="button" (click)="goBack()">← voltar</button>
@@ -13,53 +13,48 @@
       </div>
     </header>
     <div class="player-controls">
-      @if (isSyncedMode) {
-        <span class="speed-label">linha {{ activeLineIndex + 1 }}/{{ syncedLines.length }}</span>
+      @if (isSyncedMode()) {
+        <span class="speed-label">linha {{ activeLineIndex() + 1 }}/{{ syncedLines().length }}</span>
         <button class="btn-icon" type="button" (click)="decreaseOffset()">−0.5s</button>
-        <span class="speed-label">{{ offsetLabel }}</span>
+        <span class="speed-label">{{ offsetLabel() }}</span>
         <button class="btn-icon" type="button" (click)="increaseOffset()">+0.5s</button>
+      } @else if (!isBpmLocked()) {
+        <button
+          class="btn-icon"
+          type="button"
+          (click)="decreaseSpeed()"
+          [disabled]="speed() <= minSpeed">
+          − lento
+        </button>
+        <span class="speed-label">velocidade {{ speed() }}</span>
+        <button
+          class="btn-icon"
+          type="button"
+          (click)="increaseSpeed()"
+          [disabled]="speed() >= maxSpeed">
+          + rápido
+        </button>
       } @else {
-        @if (!isBpmLocked) {
-          <button
-            class="btn-icon"
-            type="button"
-            (click)="decreaseSpeed()"
-            [disabled]="speed <= minSpeed">
-            − lento
-          </button>
-          <span class="speed-label">velocidade {{ speed }}</span>
-          <button
-            class="btn-icon"
-            type="button"
-            (click)="increaseSpeed()"
-            [disabled]="speed >= maxSpeed">
-            + rápido
-          </button>
-        } @else {
-          <span class="speed-label">ritmo automático ({{ song.bpm }} BPM)</span>
-        }
+        <span class="speed-label">ritmo automático ({{ song.bpm }} BPM)</span>
       }
       <button class="btn-primary" type="button" (click)="togglePlay()">
-        {{ isPlaying ? 'pausar' : 'iniciar rolagem' }}
+        {{ isPlaying() ? 'pausar' : 'iniciar rolagem' }}
       </button>
       <button class="btn-icon" type="button" (click)="restart()">reiniciar</button>
     </div>
     <div class="lyrics-scroll scrollbar-accent" #scrollContainer>
-      @if (!isSyncedMode) {
-        <pre class="lyrics-text">{{ song.lyrics }}</pre>
-      }
-      @if (isSyncedMode) {
-        @for (line of syncedLines; track line; let i = $index) {
-          <div class="lrc-line" [class.active]="i === activeLineIndex" #lineEl>{{ line.text }}</div>
+      @if (isSyncedMode()) {
+        @for (line of syncedLines(); track line; let i = $index) {
+          <div class="lrc-line" [class.active]="i === activeLineIndex()" #lineEl>{{ line.text }}</div>
         }
+      } @else {
+        <pre class="lyrics-text">{{ song.lyrics }}</pre>
       }
     </div>
   </main>
-} @else {
-  @if (checkedStorage) {
-    <main class="player-page player-page--empty">
-      <p class="empty-state">Letra não encontrada.</p>
-      <button class="btn-icon" type="button" (click)="goBack()">← voltar para letras</button>
-    </main>
-  }
+} @else if (checkedStorage()) {
+  <main class="player-page player-page--empty">
+    <p class="empty-state">Letra não encontrada.</p>
+    <button class="btn-icon" type="button" (click)="goBack()">← voltar para letras</button>
+  </main>
 }
