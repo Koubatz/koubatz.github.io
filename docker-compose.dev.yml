@@ -1,0 +1,30 @@
+services:
+  lyrics-api:
+    build:
+      context: .
+      target: lyrics-server
+    environment:
+      LYRICS_SERVER_PORT: 4300
+    ports:
+      - "4300:4300"
+    volumes:
+      - ./public/data:/app/public/data
+      - ./scripts:/app/scripts:ro
+
+  angular:
+    build:
+      context: .
+      target: dev
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+      - ./server.ts:/app/server.ts:ro
+      - ./angular.json:/app/angular.json:ro
+      - ./tsconfig.json:/app/tsconfig.json:ro
+      - ./tsconfig.app.json:/app/tsconfig.app.json:ro
+      # localhost dentro do container é o próprio container, não a API
+      - ./docker/proxy.conf.docker.json:/app/proxy.conf.json:ro
+    depends_on:
+      - lyrics-api

@@ -1,0 +1,24 @@
+services:
+  lyrics-api:
+    build:
+      context: .
+      target: lyrics-server
+    environment:
+      LYRICS_SERVER_PORT: 4300
+    volumes:
+      - ./public/data:/app/public/data
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      target: web
+      args:
+        BASE_HREF: /
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./public/data:/srv/lyrics-data:ro
+    depends_on:
+      - lyrics-api
+    restart: unless-stopped

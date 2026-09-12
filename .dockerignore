@@ -1,0 +1,16 @@
+node_modules
+dist
+.angular
+.git
+.github
+.vscode
+.claude
+coverage
+out-tsc
+*.log
+.DS_Store
+Thumbs.db
+Dockerfile
+.dockerignore
+docker-compose.yml
+docker-compose.dev.yml
